@@ -1,0 +1,12 @@
+insert into game_word values ('동물','호랑이','ㅎㄹㅇ');
+insert into game_word values ('동물','사자','ㅅㅈ');
+insert into game_word values ('동물','오랑우탄','ㅇㄹㅇㅌ');
+insert into game_word values ('동물','침팬지','ㅊㅍㅈ');
+insert into game_word values ('동물','고양이','ㄱㅇㅇ');
+insert into game_word values ('동물','다람쥐','ㄷㄹㅈ');
+insert into game_word values ('동물','원숭이','ㅇㅅㅇ');
+insert into game_word values ('동물','고슴도치','ㄱㅅㄷㅊ');
+insert into game_word values ('동물','앵무새','ㅇㅁㅅ');
+insert into game_word values ('동물','딱따구리','ㄸㄸㄱㄹ');
+insert into game_word values ('동물','코브라','ㅋㅂㄹ');
+insert into game_word values ('a','b','c');
