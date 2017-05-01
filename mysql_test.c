@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include "/usr/include/mysql/mysql.h"
-void main(){
+
+char query[255];
+char topic[255];
+int main(){
         MYSQL *conn;
         MYSQL_RES *res;
         MYSQL_ROW row;
 
         char *server = "localhost";                            //혹은 ip
-        char *user = 'root';
-        char *password = 'root';
-        char *database = 'game_db';
+        char *user = "root";
+        char *password = "rudal45";
+        char *database = "game_db";
 
         if( !(conn = mysql_init((MYSQL*)NULL))){        //초기화 함수
                 printf("init fail\n");
@@ -33,7 +36,7 @@ void main(){
 
  
 
-        if(mysql_query(conn,"select * from testtab" )){
+        if(mysql_query(conn,"select * from game_word" )){
                 printf("query fail\n");
                 exit(1);
         }
@@ -49,5 +52,12 @@ void main(){
                 printf("%s %s\n", row[0], row[1]); 
         }
 
+        topic = ''
+        sprintf(query, "select * from game_word where topic =" "'%s'",'');
+
+        if(mysql_query(conn,, ))
+
         mysql_close(conn);
+
+        return 0;
 }
