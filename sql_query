@@ -9,5 +9,26 @@ insert into game_word values ('동물','고슴도치','ㄱㅅㄷㅊ');
 insert into game_word values ('동물','앵무새','ㅇㅁㅅ');
 insert into game_word values ('동물','딱따구리','ㄸㄸㄱㄹ');
 insert into game_word values ('동물','코브라','ㅋㅂㄹ');
-insert into game_word values ('a','b','c');
-http://shings47.tistory.com/516
+
+insert into game_word values ('영화','투모로우','ㅌㅁㄹㅇ');
+insert into game_word values ('영화','겨울왕국','ㄱㅇㅇㄱ');
+insert into game_word values ('영화','이상한나라의앨리스','ㅇㅅㅎㄴㄹㅇㅇㄹㅅ');
+insert into game_word values ('영화','겟아웃','ㄱㅇㅇ');
+insert into game_word values ('영화','마이너리티리포트','ㅁㅇㄴㄹㅌㄹㅍㅌ');
+insert into game_word values ('영화','캐리비안의해적','ㅋㄹㅂㅇㅇㅎㅈ');
+insert into game_word values ('영화','가디언즈오브갤럭시','ㄱㄷㅇㅈㅇㅂㄱㄹㅅ');
+insert into game_word values ('영화','아바타','ㅇㅂㅌ');
+insert into game_word values ('영화','왕의남자','ㅇㅇㄴㅈ');
+insert into game_word values ('영화','미션임파서블','ㅁㅅㅇㅍㅅㅂ');
+
+insert into game_word values ('전공과목','이산수학','ㅇㅅㅅㅎ');
+insert into game_word values ('전공과목','공학수학','ㄱㅎㅅㅎ');
+insert into game_word values ('전공과목','객체지향프로그래밍','ㄱㅊㅈㅎㅍㄹㄱㄹㅁ');
+insert into game_word values ('전공과목','문제해결기법','ㅁㅎㄱ');
+insert into game_word values ('전공과목','프로그래밍언어론','ㅍㄹㄱㄹㅁㅇㅇㄹ');
+insert into game_word values ('전공과목','데이터베이스','ㄷㅇㅌㅂㅇㅅ');
+insert into game_word values ('전공과목','소프트웨어공학','ㅅㅍㅌㅇㅇㄱㅎ');
+insert into game_word values ('전공과목','기초전기전자실험','ㄱㅊㅈㄱㅈㅈㅅㅎ');
+insert into game_word values ('전공과목','데이터통신','ㄷㅇㅌㅌㅅ');
+insert into game_word values ('전공과목','인공지능','ㅇㄱㅈㄴ');
+

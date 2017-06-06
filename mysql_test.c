@@ -44,7 +44,7 @@ int main(){
         printf("query sucsess\n");
 
         res = mysql_store_result(conn);
-        printf("res suceese\n");
+        printf("res success\n");
 
        
 
@@ -52,10 +52,18 @@ int main(){
                 printf("%s %s\n", row[0], row[1]); 
         }
 
-        topic = ''
-        sprintf(query, "select * from game_word where topic =" "'%s'",'');
+        printf("topic = ");
+        scanf("%s",topic);
+        sprintf(query, "select * from game_word where topic =" "'%s'",topic);
 
-        if(mysql_query(conn,, ))
+        if(mysql_query(conn,query)){
+                printf("good");
+        }
+        res = mysql_store_result(conn);
+        
+        while( (row=mysql_fetch_row(res))!=NULL){
+              printf("%s %s\n", row[0], row[1]); 
+        }
 
         mysql_close(conn);
 
