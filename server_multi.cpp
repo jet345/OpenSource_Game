@@ -20,14 +20,23 @@ char known_topic[TOPIC_NUM][TOPIC_LEN] = {"동물","영화","전공과목"};
 //////////////////////////////mysql var end//
 
 ///////////////////////////////////
-char For_Server_Problem[20];
+char For_Server_Problem[5][20];
 char For_Client_Nick[10];
 char For_Client_Answer[20];
+char For_Server_Answer[5][20];
 int answer_count=0;
 int winner_count=1;
 int topic_select_user;
+int rng[5];
 ////////////////////////////////////
 
+void random_number_generator(){
+	int i=0;
+	srand(time(NULL));
+	for(i=0; i<5; i++){
+		rng[i] = rand()%10;
+	}
+}
 
 
 void mysql_initial(){
@@ -46,24 +55,23 @@ void mysql_initial(){
 		}
 }
 void mysql_query(char query[]){
-	srand(time(NULL));
-	int r = ( rand()%10 );
 	int count=0;
-
-
+	int index=0;
 	if(mysql_query(conn,query)){
 					printf("query fail\n");
 					exit(1);
 	}
 	res = mysql_store_result(conn);
+	random_number_generator();
 	while( (row=mysql_fetch_row(res))!=NULL){
-		count++;
-		//랜덤으로 문제출제.
-		if(count == r){
-			printf("%s\n", row[0]);
-			strcpy(For_Server_Problem,row[0]);
-			//For_Server_Problem = row[0];
+		for(index=0; index<5; index++){
+			if(rng[index] == count){
+				//random하게 문제를 선택하도록
+				strcpy(For_Server_Answer[count],row[0]);
+				strcpy(For_Server_Problem[count],row[1]);
+			}
 		}
+		count++;
 	}
 }
 void mysql_problem(int topic_number){
@@ -71,7 +79,7 @@ void mysql_problem(int topic_number){
 
 	switch (a) {
 		case 0:
-			sprintf(query, "select word_initial from game_word where topic =" "'%s'",known_topic[0]);
+			sprintf(query, "select word, word_initial from game_word where topic =" "'%s'",known_topic[0]);
 			mysql_query(query);
 			mysql_close(conn);
 			break;
@@ -81,7 +89,7 @@ void mysql_problem(int topic_number){
 			mysql_close(conn);
 			break;
 		case 2:
-			sprintf(query, "select word_initial from game_word where topic =" "'%s'","전공과목");
+			sprintf(query, "select word_initial from game_word where topic =" "'%s'",known_topic[2]);
 			mysql_query(query);
 			mysql_close(conn);
 			break;
@@ -234,7 +242,7 @@ int main()
 		else if (1 == FD_ISSET(0, &status))
 		{
 			iRet = read(0, m_message.m_buffer, sizeof(m_message.m_buffer));
-				strcpy(For_Server_Problem, m_message.m_buffer);
+				//strcpy(For_Server_Problem, m_message.m_buffer);
 				m_message.m_buffer[iRet - 1] = 0;
 				strcpy(m_message.m_userName, "PROBLEM");
 				for (iCount = 0; iCount<uiUser; iCount++)
@@ -259,11 +267,16 @@ int main()
 						if(m_message.m_topic_number >= 10){
 							mysql_initial();
 							mysql_problem(m_message.m_topic_number); //For_Server_Problem에 문제가 저장됨
+							strcpy(m_message.m_topic_name, known_topic[m_message.m_topic_number-11]);
+							for(int i=0; i<5;i++)
+								strcpy(m_message.m_problem[i], For_Server_Problem[i]);
+						}
+						else{//주제를 고를 때가 아니면
 
 						}
-						strcpy(For_Client_Nick,m_message.m_userName);
+						//strcpy(For_Client_Nick,m_message.m_userName);
 						fflush(stdout);
-						strcpy(For_Client_Answer,m_message.m_buffer);
+						//strcpy(For_Client_Answer,m_message.m_buffer);
 
 						/*for (i = 0; i<uiUser; i++)
 						{
