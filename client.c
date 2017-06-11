@@ -66,37 +66,63 @@ int main(int argc, char *argv[])
       write( sock, LOGOUT, sizeof(LOGOUT) );
       break;
     }
-    //클라이언트가 입력할때
+    //클라이언트가 문제에 대한 답을 입력할때
     if( 1 == FD_ISSET( 0, &status ) )
     {
       iRet = read( 0, m_message.m_buffer, sizeof( m_message.m_buffer ) );
       m_message.m_buffer[iRet-1] = 0;
       strcpy( m_message.m_userName, m_userName );
+      m_message.m_topic_select = -3;
       write( sock, &m_message, sizeof( m_message ) );
+      fflush(stdout);
     }
 
-    //다른 socket에서 메시지가 도착했을 때
+    //다른 socket(서버 또는 client)에서 메시지가 도착했을 때
     else if( 1 == FD_ISSET( sock, &status ) )
     {
       read( sock, &m_message, sizeof( m_message ) );
 
-      //해당 클라이언트가 topic을 선택할 차례
+      //해당 클라이언트가 정답인경우(server가 보냄)
+      if(m_message.m_correct == 1){
+        printf("정답입니다^.^\n");
+        printf("정답은 %s 입니다",m_message.m_buffer);
+        printf("다음 문제로 넘어갑니다\n");
+        printf("현재 %s님의 score는 %d점입니다\n",m_message.m_userName, m_message.m_score);
+        fflush(stdout);
+      }
+
+      if(m_message.m_end == 1){
+        printf("%s의 승리로 게임이 종료되었습니다\n",m_message.m_userName);
+        fflush(stdout);
+        return 0;
+      }
+
+
       if(m_message.m_topic_select == 1){
-        printf("주제를 선택해주세요~\n");
+
+        printf("*********주제를 선택해주세요*********\n");
         printf("1. 동물\n");
         printf("2. 영화\n");
         printf("3. 전공과목\n");
-
         scanf("%d", &topic_number);
-        m_message.m_topic_number = topic_number+10;
-        m_message.m_topic_select = -1;
+        printf("선택된 주제 : %d\n",topic_number);
+        m_message.m_topic_number = topic_number + 10;
+        //서버소켓에게 전송
         write( sock, &m_message, sizeof( m_message ) );
-        topic_number = -1;
       }
-
-      else{
-        printf("[%s] : ",m_message.m_userName);
+      //server가 문제 낸 경우
+      else if(m_message.m_topic_select == -2){
+        //문제출제된 상태
+        printf("[%s] : ",m_message.m_topic_name);
+        printf("%s\n",m_message.m_problem);
+      }
+      //client가 보낸 경우
+      else if(m_message.m_topic_select == -3){
+        //server가 topic이 뭔지 가르쳐주거나
+        //다른 client가 친 답이 뭔지 볼 때
+        printf("**%s의 답**",m_message.m_userName);
         printf("%s\n",m_message.m_buffer);
+        //fflush(stdout);
       }
     }
   }

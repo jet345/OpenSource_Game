@@ -20,14 +20,15 @@ char known_topic[TOPIC_NUM][TOPIC_LEN] = {"동물","영화","전공과목"};
 //////////////////////////////mysql var end//
 
 ///////////////////////////////////
-char For_Server_Problem[5][20];
+char For_Server_Problem[20];
 char For_Client_Nick[10];
 char For_Client_Answer[20];
-char For_Server_Answer[5][20];
+char For_Server_Answer[20];
 int answer_count=0;
 int winner_count=1;
 int topic_select_user;
 int rng[5];
+int score[3]={0,0,0};
 ////////////////////////////////////
 
 void random_number_generator(){
@@ -35,6 +36,7 @@ void random_number_generator(){
 	srand(time(NULL));
 	for(i=0; i<5; i++){
 		rng[i] = rand()%10;
+		printf("%d ",rng[i]);
 	}
 }
 
@@ -57,19 +59,27 @@ void mysql_initial(){
 void mysql_query(char query[]){
 	int count=0;
 	int index=0;
+	int n;
+	n= (rand()%10);
 	if(mysql_query(conn,query)){
 					printf("query fail\n");
 					exit(1);
 	}
 	res = mysql_store_result(conn);
-	random_number_generator();
+	//random_number_generator();
 	while( (row=mysql_fetch_row(res))!=NULL){
-		for(index=0; index<5; index++){
+		/*for(index=0; index<5; index++){
 			if(rng[index] == count){
 				//random하게 문제를 선택하도록
 				strcpy(For_Server_Answer[count],row[0]);
 				strcpy(For_Server_Problem[count],row[1]);
+				printf("%s \n",For_Server_Problem[count]);
+				printf("problem ok\n");
 			}
+		}*/
+		if(n == count){
+			strcpy(For_Server_Answer,row[0]);
+			strcpy(For_Server_Problem,row[1]);
 		}
 		count++;
 	}
@@ -98,8 +108,6 @@ void mysql_problem(int topic_number){
 			break;
 	}
 }
-
-
 
 int main()
 {
@@ -130,6 +138,8 @@ int main()
 
 	unsigned char ucBuffer[500];
 	srand(time(NULL));
+
+	int problem_num_count=0;
 
 
 	echoServPort = 9999;
@@ -210,6 +220,7 @@ int main()
 		{
 			tempSock = accept(servSock, (struct sockaddr *)&echoClntAddr, &clntLen);
 			printf("Socket Number : %d\n", tempSock);
+			//m_message.m_socketnumber = tempSock - 4;
 			if (tempSock < 0)
 			{
 				printf("Accept Function Error!\n");
@@ -222,6 +233,7 @@ int main()
 			if(uiUser==3){
 				strcpy(m_message.m_userName, "SERVER");
 				strcpy(m_message.m_buffer,"<<<<<<<< 게임을 시작합니다 >>>>>>>>");
+				m_message.m_score = 0;
 				//주제를 선택할 유저(0~2) random하게 선택
 				topic_select_user = (rand() % 3);
 
@@ -268,21 +280,45 @@ int main()
 							mysql_initial();
 							mysql_problem(m_message.m_topic_number); //For_Server_Problem에 문제가 저장됨
 							strcpy(m_message.m_topic_name, known_topic[m_message.m_topic_number-11]);
-							for(int i=0; i<5;i++)
-								strcpy(m_message.m_problem[i], For_Server_Problem[i]);
+
+							m_message.m_topic_select = -2;
+							m_message.m_topic_number = -1;
+
+							strcpy(m_message.m_problem, For_Server_Problem);
+							for(i=0; i<uiUser; i++)
+								write(clntSock[i], &m_message, sizeof(m_message));
 						}
-						else{//주제를 고를 때가 아니면
+						else{
+							//주제를 고를 때가 아니면 해당 주제에 대해 1문제 출제
+							//정답을 맞춘다면
+							if(strcmp(For_Server_Answer, m_message.m_buffer)==0){
+								score[iCount]++;
+								m_message.m_score = score[iCount];
+
+								if(m_message.m_score == 5){
+									m_message.m_end = 1;
+									printf("%s의 승리로 게임이 종료되었습니다\n",m_message.m_userName);
+									for(i=0; i<uiUser; i++){
+										write(clntSock[i], &m_message, sizeof(m_message));
+									}
+									fflush(stdout);
+									return 0;
+								}
+								m_message.m_correct = 1;
+								m_message.m_topic_select = 1;
+								write(clntSock[iCount],&m_message, sizeof(m_message));
+							}
+							else{//문제를 못맞추면
+								m_message.m_correct = -1;
+								//m_message.m_topic_select = 1;
+								for(i=0; i<uiUser; i++){
+									if(i!=iCount)
+										write(clntSock[i], &m_message, sizeof(m_message));
+								}
+							}
 
 						}
-						//strcpy(For_Client_Nick,m_message.m_userName);
 						fflush(stdout);
-						//strcpy(For_Client_Answer,m_message.m_buffer);
-
-						/*for (i = 0; i<uiUser; i++)
-						{
-
-							write(clntSock[i], &m_message, sizeof(m_message));
-						}*/
 					}
 				}
 			}
