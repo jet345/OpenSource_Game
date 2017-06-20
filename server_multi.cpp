@@ -94,12 +94,12 @@ void mysql_problem(int topic_number){
 			mysql_close(conn);
 			break;
 		case 1:
-			sprintf(query, "select word_initial from game_word where topic =" "'%s'",known_topic[1]);
+			sprintf(query, "select word, word_initial from game_word where topic =" "'%s'",known_topic[1]);
 			mysql_query(query);
 			mysql_close(conn);
 			break;
 		case 2:
-			sprintf(query, "select word_initial from game_word where topic =" "'%s'",known_topic[2]);
+			sprintf(query, "select word, word_initial from game_word where topic =" "'%s'",known_topic[2]);
 			mysql_query(query);
 			mysql_close(conn);
 			break;

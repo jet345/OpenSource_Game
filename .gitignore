@@ -1,2 +1,5 @@
 client
 server
+sql
+mysql
+mysql_test.c
