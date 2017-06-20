@@ -24,5 +24,10 @@ client는 제시된 주제를 선택하고, server는 해당 주제에 맞는 �
 ### 2) Client
 <pre><code>./client {SERVER_IP}</code></pre>
 
+### 전체실행화면
+![client 실행화면](http://postfiles10.naver.net/MjAxNzA2MjBfMTQz/MDAxNDk3OTYwMDI2MDAx.wL89UqnYEZWBCtinabuUsA4-RGIVmU-2FIJdtCuJ2tsg.xrUMXU9tViF3FpOIgywHgNl4xUWhZevm1vX_aKY5QRIg.PNG.rudal1994/5.PNG?type=w773)
+![게임종료화면](http://postfiles3.naver.net/MjAxNzA2MjBfMTM4/MDAxNDk3OTYwMDI2MDY3.ubxkGwQ6RvYWURlCVJo30d_nzzvpBQr4ZwTG_FBRgpkg.9AdzkZj-t3u4mQXo4sXln2Rdq8Ki-fWOpP0x9y3t0Vkg.PNG.rudal1994/7.PNG?type=w773)
+
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
