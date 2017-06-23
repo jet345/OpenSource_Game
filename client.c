@@ -27,12 +27,12 @@ int main(int argc, char *argv[])
     printf( "Socket Function Failed!\n" );
     return 0;
   }
-
+  //서버 소켓과 같은 포트 9999번을 열어주고 인자로 들어온 servIP로 연결한다.
   memset( &echoServAddr, 0, sizeof( echoServAddr ) );
   echoServAddr.sin_family = AF_INET;
   echoServAddr.sin_addr.s_addr = inet_addr( servIP );
   echoServAddr.sin_port = htons( 9999 );
-
+  //소켓연결 첫번째 단계. connet()
   iRet = connect( sock, ( struct sockaddr* )&echoServAddr, sizeof( echoServAddr ) );
 
   if( iRet < 0 )

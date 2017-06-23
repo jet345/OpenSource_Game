@@ -1,9 +1,14 @@
-
+/**
+* @file server_multi.cpp
+* @breif server
+* @author Tricks
+*/
 #include "smart.h"
 #include "/usr/include/mysql/mysql.h"
 
 #define TOPIC_NUM 3
 #define TOPIC_LEN	15
+
 /////mysql var//////
 char query[255];
 char topic[255];
@@ -31,6 +36,9 @@ int rng[5];
 int score[3]={0,0,0};
 ////////////////////////////////////
 
+/**
+* @brief 클라이언트를 무작위로 선택하기 위한 함수
+*/
 void random_number_generator(){
 	int i=0;
 	srand(time(NULL));
@@ -40,7 +48,9 @@ void random_number_generator(){
 	}
 }
 
-
+/**
+* @breif mysql 데이터베이스에 연결하기 위한 함수
+*/
 void mysql_initial(){
 
 		if( !(conn = mysql_init((MYSQL*)NULL))){        //초기화 함수
@@ -56,6 +66,10 @@ void mysql_initial(){
 						exit(1);
 		}
 }
+/**
+* @brief 선택된 주제에 대한 쿼리문을 수행하고, 문제와 정답을 각각 저장한다.
+* @param char query[]
+*/
 void mysql_query(char query[]){
 	int count=0;
 	int index=0;
@@ -84,6 +98,9 @@ void mysql_query(char query[]){
 		count++;
 	}
 }
+/**
+* @breif 클라이언트가 주제를 선택하면 해당 주제에 대한 문제를 가져올 수 있도록 query를 생성해준다.
+*/
 void mysql_problem(int topic_number){
 	a = topic_number-11;
 
@@ -109,10 +126,11 @@ void mysql_problem(int topic_number){
 	}
 }
 
+
 int main()
 {
+	//function.h에 있는 구조체를 선언해준다.
 	MESSAGE m_message;
-
 	fd_set status;
 
 	int servSock;
@@ -140,8 +158,7 @@ int main()
 	srand(time(NULL));
 
 	int problem_num_count=0;
-
-
+	//9999번 포트를 열여준다.
 	echoServPort = 9999;
 
 	servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -157,6 +174,7 @@ int main()
 	echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	echoServAddr.sin_port = htons(echoServPort);
 
+	//소켓연결 첫번째 단계. bind()
 	iRet = bind(servSock, (struct sockaddr *)&echoServAddr, sizeof(echoServAddr));
 
 	if (iRet < 0)
@@ -165,7 +183,7 @@ int main()
 		printf("Bind Failed Error!\n");
 		return(0);
 	}
-
+	//소켓연결 두번째 단계, listen()
 	iRet = listen(servSock, MAXPENDING);
 
 	if (iRet < 0)
@@ -188,39 +206,29 @@ int main()
 		for (i = 0; i<uiUser; i++)
 		{
 			FD_SET(clntSock[i], &status);
-
 			if (iMaxSock <= clntSock[i])
-			{
-				iMaxSock = clntSock[i] + 1;
-			}
-
+					iMaxSock = clntSock[i] + 1;
 		}
-
+		//소켓연결 세번째 단계. select()
 		iRet = select(iMaxSock, &status, 0, 0, 0);
 		if (iRet < 0)
 		{
 			printf("Select Function Error!\n");
 			strcpy(m_message.m_buffer, "Server error. Connection Closed");
-
 			for (iCount = 0; iCount<uiUser; iCount++)
-			{
 				write(clntSock[iCount], &m_message, sizeof(m_message));
-			}
 			strcpy(m_message.m_buffer, "/q");
-
 			for (iCount = 0; iCount<uiUser; iCount++)
-			{
 				write(clntSock[iCount], &m_message, sizeof(m_message));
-			}
 			break;
 		}
 
 		//새로운 client소켓이 들어올때
 		if (1 == FD_ISSET(servSock, &status))
 		{
+			//소켓연결 네번째 단계. accept()
 			tempSock = accept(servSock, (struct sockaddr *)&echoClntAddr, &clntLen);
 			printf("Socket Number : %d\n", tempSock);
-			//m_message.m_socketnumber = tempSock - 4;
 			if (tempSock < 0)
 			{
 				printf("Accept Function Error!\n");
@@ -236,7 +244,6 @@ int main()
 				m_message.m_score = 0;
 				//주제를 선택할 유저(0~2) random하게 선택
 				topic_select_user = (rand() % 3);
-
 				for (iCount = 0; iCount<uiUser; iCount++)
 				{
 					if(topic_select_user == iCount){
@@ -246,7 +253,6 @@ int main()
 						m_message.m_topic_select = 0;}
 					write(clntSock[iCount], &m_message, sizeof(m_message));
 				}
-
 			}
 		}
 
@@ -258,9 +264,7 @@ int main()
 				m_message.m_buffer[iRet - 1] = 0;
 				strcpy(m_message.m_userName, "PROBLEM");
 				for (iCount = 0; iCount<uiUser; iCount++)
-				{
 					write(clntSock[iCount], &m_message, sizeof(m_message));
-				}
 		}
 
 		//클라이언트쪽에서 message를 보낸경우
@@ -278,7 +282,8 @@ int main()
 						//topic_number는 10부터 시작한다.
 						if(m_message.m_topic_number >= 10){
 							mysql_initial();
-							mysql_problem(m_message.m_topic_number); //For_Server_Problem에 문제가 저장됨
+							//For_Server_Problem에 문제가 저장됨
+							mysql_problem(m_message.m_topic_number);
 							strcpy(m_message.m_topic_name, known_topic[m_message.m_topic_number-11]);
 
 							m_message.m_topic_select = -2;
@@ -294,13 +299,12 @@ int main()
 							if(strcmp(For_Server_Answer, m_message.m_buffer)==0){
 								score[iCount]++;
 								m_message.m_score = score[iCount];
-
+								//score가 5가되면 모든 게임이 종료된다.
 								if(m_message.m_score == 5){
 									m_message.m_end = 1;
 									printf("%s의 승리로 게임이 종료되었습니다\n",m_message.m_userName);
-									for(i=0; i<uiUser; i++){
+									for(i=0; i<uiUser; i++)
 										write(clntSock[i], &m_message, sizeof(m_message));
-									}
 									fflush(stdout);
 									return 0;
 								}
@@ -308,32 +312,26 @@ int main()
 								m_message.m_topic_select = 1;
 								write(clntSock[iCount],&m_message, sizeof(m_message));
 							}
-							else{//문제를 못맞추면
+							//클라이언트가 문제를 맞추지 못할 시
+							else{
 								m_message.m_correct = -1;
-								//m_message.m_topic_select = 1;
 								for(i=0; i<uiUser; i++){
 									if(i!=iCount)
 										write(clntSock[i], &m_message, sizeof(m_message));
 								}
-							}
-
-						}
+							}//End of else2
+						}//End of else1
 						fflush(stdout);
-					}
-				}
-			}
-
+					}//End of if2
+				}//End of if
+			}// Endof for
 		} // End of else
 	}// End of while(1)
 
 	printf("Server Closed...\n");
-
 	close(servSock);
-
+	//연결된 모든 클라이언트 소켓을 닫아준다.
 	for (i = 0; i<uiUser; i++)
-	{
 		close(clntSock[i]);
-	}
-
 	return(0);
 }
